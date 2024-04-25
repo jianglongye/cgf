@@ -20,7 +20,7 @@ END_LINKS = ["link_3.0_tip", "link_7.0_tip", "link_11.0_tip", "link_15.0_tip"]  
 URDF_DIR = os.path.join(
     os.path.dirname(__file__), "..", "data/original_robot/allegro_hand_ros/allegro_hand_description/"
 )
-DENSE_GEO_PATH = os.path.join(os.path.dirname(__file__), "..", "assets/geometry/allegro_hand/right_dense_geo.npz")
+DENSE_GEO_PATH = os.path.join(os.path.dirname(__file__), "..", "data/geometry/allegro_hand/right_dense_geo.npz")
 
 
 def main(

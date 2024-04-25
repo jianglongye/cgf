@@ -23,7 +23,7 @@ MANO_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../data/ma
 URDF_DIR = os.path.join(
     os.path.dirname(__file__), "..", "data/original_robot/allegro_hand_ros/allegro_hand_description/"
 )
-DENSE_GEO_PATH = os.path.join(os.path.dirname(__file__), "..", "assets/geometry/allegro_hand/right_dense_geo.npz")
+DENSE_GEO_PATH = os.path.join(os.path.dirname(__file__), "..", "data/geometry/allegro_hand/right_dense_geo.npz")
 
 
 def main(data_root: str, mano_side: Literal["left", "right"] = "left", seq_id: str = None, aug_idx: int = 0):

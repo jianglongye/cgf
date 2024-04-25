@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cgf"
+version = "0.0.1"
+authors = [{ name = "Jianglong Ye", email = "jianglong.yeh@gmail.com" }]
+description = "Learning Continuous Grasping Function with a Dexterous Hand from Human Demonstrations, RA-L 2023 & IROS 2023"
+readme = "README.md"
+requires-python = ">=3.8"
+
+[project.urls]
+Homepage = "https://jianglongye.com/cgf/"
+Issues = "https://github.com/jianglongye/cgf/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cgf*"]
