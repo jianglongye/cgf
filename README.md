@@ -22,14 +22,14 @@ To set up the environment, follow these steps:
 conda create -n cgf python=3.10 -y && conda activate cgf
 conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia -y
 
-pip install six numpy==1.23.1 tqdm pyyaml scipy opencv-python trimesh einops lxml transforms3d viser fvcore
+pip install six numpy==1.23.1 tqdm pyyaml scipy opencv-python trimesh einops lxml transforms3d fvcore viser==0.1.34
 pip install git+https://github.com/hassony2/chumpy.git
 pip install git+https://github.com/hassony2/manopth
-pip install --no-index --no-cache-dir pytorch3d -f https://dl.fbaipublicfiles.com/pytorch3d/packaging/wheels/py310_cu117_pyt1131/download.html
-# the above command is for pytorch 1.13.1, CUDA 11.7, python 3.10, if you encounter any issues, please try install pytorch3d from source:
-# pip install git+https://github.com/facebookresearch/pytorch3d.git
+pip install git+https://github.com/facebookresearch/pytorch3d.git@v0.7.3
+# installing pytorch3d from source is usually more robust, for pytorch 1.13.1, CUDA 11.7, python 3.10, the following command *may* work:
+# pip install --no-index --no-cache-dir pytorch3d -f https://dl.fbaipublicfiles.com/pytorch3d/packaging/wheels/py310_cu117_pyt1131/download.html
 
-pip install git+https://github.com/UM-ARM-Lab/pytorch_kinematics
+pip install git+https://github.com/UM-ARM-Lab/pytorch_kinematics.git@v0.6.1
 ```
 
 ## Data Preparation

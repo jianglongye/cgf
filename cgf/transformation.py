@@ -4,6 +4,15 @@ from typing import Union
 import numpy as np
 import torch
 import torch.nn.functional as F
+
+# fix for chumpy
+np.bool = np.bool_
+np.int = np.int_
+np.float = np.float_
+np.complex = np.complex_
+np.object = np.object_
+np.str = np.str_
+
 from manopth.manolayer import ManoLayer
 from scipy.spatial.transform import Rotation as Rot
 
@@ -103,7 +112,12 @@ def quaternion_to_matrix(quaternions):
     """
     if isinstance(quaternions, np.ndarray) or isinstance(quaternions, list) or isinstance(quaternions, tuple):
         quaternions = np.asarray(quaternions)
-        r, i, j, k = quaternions[..., 0], quaternions[..., 1], quaternions[..., 2], quaternions[..., 3]
+        r, i, j, k = (
+            quaternions[..., 0],
+            quaternions[..., 1],
+            quaternions[..., 2],
+            quaternions[..., 3],
+        )
         two_s = 2.0 / (quaternions * quaternions).sum(-1)
         matrices = np.stack(
             [
@@ -359,7 +373,13 @@ class ManoTransformation:
     def __init__(self, side, mano_root):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", UserWarning)
-            self.mano_layer = ManoLayer(flat_hand_mean=False, ncomps=45, side=side, mano_root=mano_root, use_pca=True)
+            self.mano_layer = ManoLayer(
+                flat_hand_mean=False,
+                ncomps=45,
+                side=side,
+                mano_root=mano_root,
+                use_pca=True,
+            )
 
     def transform_pose(self, pose, betas, tf_mat=None, quat=None, tl=None):
         assert tf_mat is not None or (quat is not None and tl is not None), "incorrect params"
