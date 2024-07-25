@@ -26,7 +26,12 @@ URDF_DIR = os.path.join(
 DENSE_GEO_PATH = os.path.join(os.path.dirname(__file__), "..", "data/geometry/allegro_hand/right_dense_geo.npz")
 
 
-def main(data_root: str, mano_side: Literal["left", "right"] = "left", seq_id: str = None, aug_idx: int = 0):
+def main(
+    data_root: str,
+    mano_side: Literal["left", "right"] = "left",
+    seq_id: str = "20201022_114847",
+    aug_idx: int = 0,
+):
     # human hand
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", UserWarning)
@@ -47,11 +52,11 @@ def main(data_root: str, mano_side: Literal["left", "right"] = "left", seq_id: s
 
     if seq_id is None:
         seq_id = sorted_seq_ids[0]
-    assert seq_id in sorted_seq_ids
+    assert seq_id in sorted_seq_ids, f"seq_id {seq_id} not in sorted_seq_ids"
     begin_f, end_f = valid_frames_range[sorted_seq_ids.index(seq_id)]
 
     mano_pose = pose_m_aug_npz_file[f"{seq_id}_mano"][:, begin_f:end_f]
-    mano_pose = torch.from_numpy(mano_pose[aug_idx, :, 0]).clone().to(DEVICE, dtype=DTYPE)
+    mano_pose = torch.from_numpy(mano_pose[aug_idx, :].squeeze(1)).clone().to(DEVICE, dtype=DTYPE)
     betas = (
         torch.from_numpy(seq_betas[sorted_seq_ids.index(seq_id)])
         .clone()
@@ -81,7 +86,9 @@ def main(data_root: str, mano_side: Literal["left", "right"] = "left", seq_id: s
         dtype=DTYPE,
         device=DEVICE,
     )
-    qpos = np.load(os.path.join(data_root, "processed", f"retargeting_{mano_side}", f"{aug_idx}.npz"))["qpos"][aug_idx]
+    qpos = np.load(os.path.join(data_root, "processed", f"retargeting_{mano_side}", f"{aug_idx}.npz"))["qpos"][
+        sorted_seq_ids.index(seq_id)
+    ]
 
     tf3ds, geos = kinematics_layer(torch.from_numpy(qpos).to(DEVICE, dtype=DTYPE))
 
@@ -107,5 +114,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_root", type=str, default=os.path.join(os.path.dirname(__file__), "..", "data"))
     parser.add_argument("--mano_side", type=str, choices=["left", "right"], default="left")
+    parser.add_argument("--seq_id", type=str, default=None)
+    parser.add_argument("--aug_idx", type=int, default=0)
     args = parser.parse_args()
-    main(args.data_root, args.mano_side)
+    main(args.data_root, args.mano_side, args.seq_id, args.aug_idx)
