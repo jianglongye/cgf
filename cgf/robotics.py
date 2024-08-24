@@ -35,9 +35,9 @@ class KinematicsLayer(nn.Module):
 
         if os.path.exists(urdf_str_or_path):
             with open(urdf_str_or_path) as f:
-                chain: pk.chain.Chain = pk.build_chain_from_urdf(f.read())
+                self.chain: pk.chain.Chain = pk.build_chain_from_urdf(f.read()).to(dtype=dtype, device=device)
         else:
-            chain: pk.chain.Chain = pk.build_chain_from_urdf(urdf_str_or_path)
+            self.chain: pk.chain.Chain = pk.build_chain_from_urdf(urdf_str_or_path).to(dtype=dtype, device=device)
 
         if return_geometry and (geometry_path is None and geometry_data is None):
             raise TypeError("geometry_path or geometry_data should be set if geometry need to be returned")
@@ -57,16 +57,15 @@ class KinematicsLayer(nn.Module):
                 self.geometries[name] = mesh
 
         self.end_links = end_links
-        self.serial_chains: List[pk.chain.SerialChain] = []
+        # self.serial_chains: List[pk.chain.SerialChain] = []
         self.return_geometry = return_geometry
         self.global_transform = global_transform
 
-        for link_name in end_links:
-            serial_chain = pk.SerialChain(chain, link_name)
-            serial_chain = serial_chain.to(dtype=dtype, device=device)
-            self.serial_chains.append(serial_chain)
-
-        self.dof: int = len(chain.get_joint_parameter_names())
+        # for link_name in end_links:
+        #     serial_chain = pk.SerialChain(self.chain, link_name)
+        #     serial_chain = serial_chain.to(dtype=dtype, device=device)
+        #     self.serial_chains.append(serial_chain)
+        self.dof: int = len(self.chain.get_joint_parameter_names())
 
     def forward(self, qpos: torch.Tensor):
         tf3ds: Dict[str, pk.Transform3d] = {}
@@ -80,11 +79,12 @@ class KinematicsLayer(nn.Module):
         tf3ds["palm"] = pk.Transform3d(batch_size, matrix=identiy)
 
         start = 0 if not self.global_transform else 6
-        for _, serial_chain in enumerate(self.serial_chains):
-            # hard code for now
-            joint_num = 4
-            tf3ds.update(serial_chain.forward_kinematics(qpos[:, start : start + joint_num], end_only=False))
-            start += joint_num
+        # for _, serial_chain in enumerate(self.serial_chains):
+        #     # hard code for now
+        #     joint_num = 4
+        #     tf3ds.update(serial_chain.forward_kinematics(qpos[:, start : start + joint_num], end_only=False))
+        #     start += joint_num
+        tf3ds.update(self.chain.forward_kinematics(qpos[:, start:]))
 
         if self.global_transform:
             rot_mat = axis_angle_to_matrix(qpos[:, 3:6])
@@ -98,7 +98,6 @@ class KinematicsLayer(nn.Module):
             for name in self.geometries:
                 geo = self.geometries[name].extend(batch_size).clone()
                 geo = geo.update_padded(tf3ds[name].transform_points(geo.verts_padded()))
-                # geo = geo.update_padded(cvee.rotate(tf3ds[name].transform_points(geo.verts_padded()), debug_mat[None]))
                 geos[name] = geo
             return tf3ds, geos
 
