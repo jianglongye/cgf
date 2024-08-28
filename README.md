@@ -126,6 +126,12 @@ To run the simulation, run the following command (replace `SAPIEN_SAMPLE_DATA_PA
 python scripts/sim.py --data_path SAPIEN_SAMPLE_DATA_PATH
 ```
 
+## FAQ
+
+1. _Solution about "failed to load ktx texture /home/xxx/cgf/assets/misc/ktx/day.ktx"_:
+
+   Download from [Google Drive link](https://drive.google.com/file/d/1Xe3jgcIUZm_8yaFUsHnO7WJWr8cV41fE/view?usp=sharing), and put it under `PROJECT_ROOT/assets/misc/ktx`. Related issues: [issue #4](https://github.com/yzqin/dex-hand-teleop/issues/4), [issue #2](https://github.com/jianglongye/cgf/issues/2).
+
 ## Citation
 
 ```bibtex
